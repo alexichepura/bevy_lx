@@ -1,0 +1,17 @@
+.DS_Store
+*.swp
+*.swo
+*.so
+*.dSYM
+target
+private
+lib
+examples/lib
+examples/bin
+*~
+BENCH
+DESIGN.md
+STYLE.md
+.idea
+
+.env
