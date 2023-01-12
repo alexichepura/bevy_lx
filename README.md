@@ -1,5 +1,5 @@
 # bevy_lx
-Bevyengine based crates for logistiks
+Bevyengine based crates for logistics
 
 Run bevy/rapier scene with 8000 containers stacked 20x20x20
 ```sh
