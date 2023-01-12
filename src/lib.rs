@@ -2,6 +2,7 @@ mod camera;
 mod dash;
 mod font;
 mod ground;
+mod input;
 mod light;
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, pbr::DirectionalLightShadowMap, prelude::*};
 use bevy_framepace::{FramepacePlugin, FramepaceSettings, Limiter};
@@ -10,6 +11,7 @@ use camera::*;
 use dash::*;
 use font::FontHandle;
 use ground::*;
+use input::*;
 use light::*;
 
 fn rapier_config_start_system(mut c: ResMut<RapierContext>) {
@@ -51,10 +53,11 @@ pub fn lx_app(app: &mut App) -> &mut App {
         .add_startup_system(light_start_system)
         .add_startup_system(dash_fps_start_system)
         .add_startup_system(rapier_config_start_system)
-        .add_system(camera_controller_system)
-        .add_system(camera_switch_system)
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
+        .add_system(camera_controller_system)
+        .add_system(camera_switch_system)
+        .add_system(keyboard_input_system)
         .add_system(dash_fps_system);
 
     #[cfg(all(not(target_arch = "wasm32"), not(target_os = "ios")))]
