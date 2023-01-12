@@ -17,11 +17,11 @@ use input::*;
 use light::*;
 
 fn rapier_config_start_system(mut c: ResMut<RapierContext>) {
-    c.integration_parameters.max_velocity_iterations = 64;
-    c.integration_parameters.max_velocity_friction_iterations = 16;
-    c.integration_parameters.max_stabilization_iterations = 64;
-    c.integration_parameters.allowed_linear_error = 0.0001;
-    c.integration_parameters.erp = 0.99;
+    // c.integration_parameters.max_velocity_iterations = 64;
+    // c.integration_parameters.max_velocity_friction_iterations = 16;
+    // c.integration_parameters.max_stabilization_iterations = 64;
+    // c.integration_parameters.allowed_linear_error = 0.0001;
+    // c.integration_parameters.erp = 0.99;
     dbg!(c.integration_parameters);
 }
 
@@ -32,21 +32,21 @@ pub enum SystemLabel {
     Esp,
 }
 
-const FPS: f32 = 60.;
+// const FPS: f32 = 60.;
 pub fn lx_app(app: &mut App) -> &mut App {
     app.add_plugin(FramepacePlugin)
         .init_resource::<FontHandle>()
         .insert_resource(RapierConfiguration {
-            timestep_mode: TimestepMode::Fixed {
-                dt: 1. / FPS,
-                substeps: 10,
-            },
+            // timestep_mode: TimestepMode::Fixed {
+            //     dt: 1. / FPS,
+            //     substeps: 10,
+            // },
             ..default()
         })
-        .insert_resource(FramepaceSettings {
-            limiter: Limiter::from_framerate(FPS as f64),
-            ..default()
-        })
+        // .insert_resource(FramepaceSettings {
+        //     limiter: Limiter::from_framerate(FPS as f64),
+        //     ..default()
+        // })
         .insert_resource(Msaa { samples: 4 })
         .insert_resource(CameraConfig::default())
         .insert_resource(DirectionalLightShadowMap { size: 2048 * 4 })

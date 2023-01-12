@@ -1,22 +1,19 @@
 use bevy::prelude::*;
 use bevy_rapier3d::prelude::*;
+use std::f32::consts::FRAC_PI_2;
 
-pub fn container_start_system(
-    mut commands: Commands,
-    mut meshes: ResMut<Assets<Mesh>>,
-    mut materials: ResMut<Assets<StandardMaterial>>,
-) {
+pub fn container_start_system(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let fcl_gl: Handle<Scene> = asset_server.load("fcl_container.glb#Scene0");
+
     let c = LxContainer::fcl();
     for ix in 0..20 {
         for iy in 0..20 {
             for iz in 0..20 {
                 let y = c.hh() + iy as f32 * c.h;
-                spawn_container(
-                    &mut commands,
-                    &mut meshes,
-                    &mut materials,
-                    Vec3::new(ix as f32 * 3., y, iz as f32 * 13.),
-                );
+                let translate = Vec3::new(ix as f32 * 3., y, iz as f32 * 13.);
+                let transform = Transform::from_translation(translate);
+                let transform = transform.with_rotation(Quat::from_rotation_y(FRAC_PI_2));
+                spawn_container(&mut commands, transform, &fcl_gl);
             }
         }
     }
@@ -45,38 +42,40 @@ impl LxContainer {
     pub fn hl(&self) -> f32 {
         self.l / 2.
     }
-    pub fn shape(&self) -> shape::Box {
-        shape::Box::new(self.w, self.h, self.l)
-    }
+    // pub fn shape(&self) -> shape::Box {
+    //     shape::Box::new(self.w, self.h, self.l)
+    // }
     pub fn collider(&self) -> Collider {
         Collider::cuboid(self.hw(), self.hh(), self.hl())
     }
 }
 
-pub fn spawn_container(
-    commands: &mut Commands,
-    meshes: &mut ResMut<Assets<Mesh>>,
-    materials: &mut ResMut<Assets<StandardMaterial>>,
-    tr: Vec3,
-) {
+pub fn spawn_container(commands: &mut Commands, transform: Transform, fcl_gl: &Handle<Scene>) {
     let c = LxContainer::fcl();
     commands
-        .spawn(PbrBundle {
-            mesh: meshes.add(c.shape().into()),
-            material: materials.add(Color::rgb(0.4, 0.2, 0.2).into()),
-            transform: Transform::from_translation(tr),
-            ..Default::default()
-        })
-        // .insert(RigidBody::Dynamic)
-        .insert(RigidBody::Fixed)
-        .insert(Sleeping {
-            sleeping: true,
+        .spawn_empty()
+        .insert(TransformBundle::from(transform))
+        .insert(SceneBundle {
+            scene: fcl_gl.clone(),
+            transform,
             ..default()
         })
-        .insert(Velocity::zero())
-        .insert(ColliderScale::Absolute(Vec3::ONE))
-        .insert(Restitution::coefficient(0.))
-        .insert(ExternalForce::default())
-        .insert(ExternalImpulse::default())
-        .insert(c.collider());
+        .with_children(|children| {
+            let transform = Transform::from_translation(Vec3::Y * c.hh());
+            children
+                .spawn_empty()
+                .insert(c.collider())
+                .insert(TransformBundle::from(transform))
+                .insert(RigidBody::Fixed)
+                // .insert(RigidBody::Dynamic)
+                .insert(Sleeping {
+                    sleeping: true,
+                    ..default()
+                })
+                .insert(Velocity::zero())
+                .insert(ColliderScale::Absolute(Vec3::ONE))
+                .insert(Restitution::coefficient(0.))
+                .insert(ExternalForce::default())
+                .insert(ExternalImpulse::default());
+        });
 }
