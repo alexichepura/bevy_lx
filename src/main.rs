@@ -1,11 +1,11 @@
 use bevy::prelude::*;
-use bevy_lx::car_app;
+use bevy_lx::lx_app;
 
 fn main() {
     let mut app = App::new();
     app.add_plugins(DefaultPlugins.set(WindowPlugin {
         window: WindowDescriptor {
-            title: "car sim deep learning".to_string(),
+            title: "bavy_lx".to_string(),
             width: 720.,
             height: 640.,
             // monitor: MonitorSelection::Index(1),
@@ -17,5 +17,5 @@ fn main() {
         ..default()
     }));
 
-    car_app(&mut app).run();
+    lx_app(&mut app).run();
 }

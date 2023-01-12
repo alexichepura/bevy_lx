@@ -130,10 +130,8 @@ impl CameraConfig {
 
 impl Default for CameraConfig {
     fn default() -> Self {
-        let view = CameraFollowView::Near;
-        let (from, at) = follow_props_by_mode(&view);
         Self {
-            mode: CameraMode::Follow(view, from, at),
+            mode: CameraMode::Free,
         }
     }
 }

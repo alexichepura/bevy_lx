@@ -1,6 +1,7 @@
 mod camera;
 mod dash;
 mod font;
+mod ground;
 mod light;
 use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, pbr::DirectionalLightShadowMap, prelude::*};
 use bevy_framepace::{FramepacePlugin, FramepaceSettings, Limiter};
@@ -8,6 +9,7 @@ use bevy_rapier3d::prelude::*;
 use camera::*;
 use dash::*;
 use font::FontHandle;
+use ground::*;
 use light::*;
 
 fn rapier_config_start_system(mut c: ResMut<RapierContext>) {
@@ -27,7 +29,7 @@ pub enum SystemLabel {
 }
 
 const FPS: f32 = 60.;
-pub fn car_app(app: &mut App) -> &mut App {
+pub fn lx_app(app: &mut App) -> &mut App {
     app.add_plugin(FramepacePlugin)
         .init_resource::<FontHandle>()
         .insert_resource(RapierConfiguration {
@@ -39,20 +41,20 @@ pub fn car_app(app: &mut App) -> &mut App {
         })
         .insert_resource(FramepaceSettings {
             limiter: Limiter::from_framerate(FPS as f64),
-            // limiter: Limiter::Auto,
             ..default()
         })
         .insert_resource(Msaa { samples: 4 })
         .insert_resource(CameraConfig::default())
         .insert_resource(DirectionalLightShadowMap { size: 2048 * 4 })
+        .add_startup_system(ground_start_system)
         .add_startup_system(camera_start_system)
+        .add_startup_system(light_start_system)
+        .add_startup_system(dash_fps_start_system)
+        .add_startup_system(rapier_config_start_system)
         .add_system(camera_controller_system)
         .add_system(camera_switch_system)
         .add_plugin(FrameTimeDiagnosticsPlugin::default())
         .add_plugin(RapierPhysicsPlugin::<NoUserData>::default())
-        .add_startup_system(light_start_system)
-        .add_startup_system(dash_fps_start_system)
-        .add_startup_system(rapier_config_start_system)
         .add_system(dash_fps_system);
 
     #[cfg(all(not(target_arch = "wasm32"), not(target_os = "ios")))]
