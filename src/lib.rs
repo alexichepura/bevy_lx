@@ -1,4 +1,5 @@
 mod camera;
+mod container;
 mod dash;
 mod font;
 mod ground;
@@ -8,6 +9,7 @@ use bevy::{diagnostic::FrameTimeDiagnosticsPlugin, pbr::DirectionalLightShadowMa
 use bevy_framepace::{FramepacePlugin, FramepaceSettings, Limiter};
 use bevy_rapier3d::prelude::*;
 use camera::*;
+use container::*;
 use dash::*;
 use font::FontHandle;
 use ground::*;
@@ -49,6 +51,7 @@ pub fn lx_app(app: &mut App) -> &mut App {
         .insert_resource(CameraConfig::default())
         .insert_resource(DirectionalLightShadowMap { size: 2048 * 4 })
         .add_startup_system(ground_start_system)
+        .add_startup_system(container_start_system)
         .add_startup_system(camera_start_system)
         .add_startup_system(light_start_system)
         .add_startup_system(dash_fps_start_system)
