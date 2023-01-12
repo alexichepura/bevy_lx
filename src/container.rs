@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use bevy_rapier3d::{prelude::*, rapier::prelude::RigidBodyActivation};
+use bevy_rapier3d::prelude::*;
 
 pub fn container_start_system(
     mut commands: Commands,
