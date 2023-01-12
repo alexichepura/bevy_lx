@@ -15,7 +15,7 @@ pub fn camera_start_system(mut commands: Commands) {
                     near: 0.01,
                     ..default()
                 }),
-                transform: Transform::from_translation(Vec3::Y * 15. + Vec3::X * 5.)
+                transform: Transform::from_translation(Vec3::Y * 25. + Vec3::X * 150.)
                     .looking_at(Vec3::Y * 6., Vec3::Y),
                 ..default()
             },

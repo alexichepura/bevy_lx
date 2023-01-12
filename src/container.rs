@@ -1,12 +1,25 @@
 use bevy::prelude::*;
-use bevy_rapier3d::prelude::*;
+use bevy_rapier3d::{prelude::*, rapier::prelude::RigidBodyActivation};
 
 pub fn container_start_system(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<StandardMaterial>>,
 ) {
-    spawn_container(&mut commands, &mut meshes, &mut materials);
+    let c = LxContainer::fcl();
+    for ix in 0..20 {
+        for iy in 0..20 {
+            for iz in 0..20 {
+                let y = c.hh() + iy as f32 * c.h;
+                spawn_container(
+                    &mut commands,
+                    &mut meshes,
+                    &mut materials,
+                    Vec3::new(ix as f32 * 3., y, iz as f32 * 13.),
+                );
+            }
+        }
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -17,7 +30,6 @@ pub struct LxContainer {
 }
 impl LxContainer {
     pub fn fcl() -> Self {
-        // 12.2m x 2.4m x 2.6m
         LxContainer {
             w: 2.4,
             h: 2.6,
@@ -45,15 +57,26 @@ pub fn spawn_container(
     commands: &mut Commands,
     meshes: &mut ResMut<Assets<Mesh>>,
     materials: &mut ResMut<Assets<StandardMaterial>>,
+    tr: Vec3,
 ) {
     let c = LxContainer::fcl();
     commands
         .spawn(PbrBundle {
             mesh: meshes.add(c.shape().into()),
-            material: materials.add(Color::rgb(0.2, 0.2, 0.2).into()),
-            transform: Transform::from_translation(Vec3::Y * 5.),
+            material: materials.add(Color::rgb(0.4, 0.2, 0.2).into()),
+            transform: Transform::from_translation(tr),
             ..Default::default()
         })
-        .insert(RigidBody::Dynamic)
+        // .insert(RigidBody::Dynamic)
+        .insert(RigidBody::Fixed)
+        .insert(Sleeping {
+            sleeping: true,
+            ..default()
+        })
+        .insert(Velocity::zero())
+        .insert(ColliderScale::Absolute(Vec3::ONE))
+        .insert(Restitution::coefficient(0.))
+        .insert(ExternalForce::default())
+        .insert(ExternalImpulse::default())
         .insert(c.collider());
 }
